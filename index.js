@@ -1,7 +1,9 @@
 const express = require('express')
+const cors = require('cors')
 const app = express()
 
 app.use(express.json())
+app.use(cors())
 
 let notes = [
   {
@@ -23,15 +25,15 @@ let notes = [
     important: true
   }
 ]
-
+//Get home page
 app.get('/', (req, res) => {
   res.send('<hi>Quick Update</h1>')
 })
-
+//Gets all notes
 app.get('/api/notes', (req, res) => {
   res.json(notes)
 })
-
+//Gets a specific notes
 app.get('/api/notes/:id', (req, res) => {
   const id = Number(req.params.id)
   const note = notes.find(note => note.id === id)
@@ -41,24 +43,22 @@ app.get('/api/notes/:id', (req, res) => {
   } else {
     res.status(404).end()
   }
-
-  res.json(note)
 })
-
+//Deletes a specific note
 app.delete('/api/notes/:id', (req, res) => {
   const id = Number(req.params.id)
   notes = notes.filter(note => note.id !== id)
 
   res.status(204).end()
 })
-
+//Gets ID for a new note
 const generateId = () => {
   const maxId = notes.length > 0
     ? Math.max(...notes.map(n => n.id))
     : 0
   return maxId + 1
 }
-
+//Add new note to notes
 app.post('/api/notes', (req, res) => {
   const body = req.body
 
@@ -80,7 +80,7 @@ app.post('/api/notes', (req, res) => {
   res.json(note)
 })
 
-const port = 3002
+const port = process.env.PORT || 3002
 app.listen(port, () => {
   console.log(`Server running on port ${port}`)
 })
